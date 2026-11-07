@@ -1,0 +1,20 @@
+groups:
+  - name: flask-app
+    rules:
+      - alert: AppDown
+        expr: up{job="flask-app"} == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Flask-застосунок недоступний"
+
+      - alert: HighErrorRate
+        expr: >
+          100 * sum(rate(app_requests_total{status=~"5.."}[1m]))
+          / sum(rate(app_requests_total[1m])) > 15
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Частка помилок перевищує 15%"
